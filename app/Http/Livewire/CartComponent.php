@@ -58,15 +58,19 @@ class CartComponent extends Component
 
     public function applyCouponCode(){
 
-    $coupon = Coupon::where('code',$this->couponCode)->where('cart_value','<=',Cart::instance('cart')->subtotal())->first();
-    if(!$coupon)
-    {
-        session()->flash('coupon_message','Coupon code is invalid!');
-        return;
-    }
+    $coupon = Coupon::where('code',$this->couponCode)->where('expiry_date','>=',Carbon::today())->where('cart_value','<=',Cart::instance('cart')->subtotal())->first();
+        if(!$coupon)
+        {
+            session()->flash('coupon_message','Coupon code is invalid!');
+            return;
+        }
 
-    session()->put('coupon',['code' => $coupon->code,'type' => $coupon->type,'value' => $coupon->value,
-        'cart_value' => $coupon->cart_value]);
+       session()->put('coupon',[
+            'code' => $coupon->code,
+            'type' => $coupon->type,
+            'value' => $coupon->value,
+            'cart_value' => $coupon->cart_value
+        ]);
     }
 
     public function calculateDiscounts(){
