@@ -19,7 +19,7 @@ class CreateOrdersTable extends Migration
             $table->decimal('subtotal');
             $table->decimal('discount')->default(0);
             $table->decimal('tax');
-            $table->decimal('total');
+            $table->decimal('total', 10, 2);
             $table->string('firstname');
             $table->string('lastname');
             $table->string('mobile');
