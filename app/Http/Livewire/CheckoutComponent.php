@@ -9,6 +9,7 @@ use Cart;
 use App\Models\OrderItem;
 use App\Models\Shipping;
 use App\Models\Transaction;
+use Stripe;
 
 class CheckoutComponent extends Component
 {
@@ -167,39 +168,96 @@ public function placeOrder()
             $shipping->zipcode = $this->s_zipcode;
             $shipping->save();
         }
-
-
         if($this->paymentmode == 'cod')
         {
-           $transaction=new Transaction();
+         $this->makeTransaction($order->id,'pending');  
+         $this->resetCart();
+        }         
+        else if($this->paymentmode=='card'){
+            $stripe=Stripe::make(env('STRIPE_KEY'));
+
+            try{
+                $token=$stripe->tokens()->create([
+                    'card'=>[
+                            'number'=>$this->card_no,
+                            'exp_month'=>$this=>exp_month,
+                            'exp_year'=>$this=>exp_year,   
+                            'cvc' =>$this->cvc
+                        ]
+                ]);
+
+            if(!isset($token['id']))
+                session()->flash('stripe_rror','The stripe token are not correct');
+                $this->thankyou=0;
+            }
+
+        $customer = $stripe->customers()->create([
+            'name' => $this->firstname . ' ' . $this->lastname,
+            'email' =>$this->email,
+            'phone' =>$this->mobile,
+            'address' => [
+                'line1' =>$this->line1,
+                'postal_code' => $this->zipcode,
+                'city' => $this->city,
+                'state' => $this->province,
+                'country' => $this->country
+            ],
+            'shipping' => [
+                'name' => $this->firstname . ' ' . $this->lastname,
+                'address' => [
+                    'line1' =>$this->line1,
+                    'postal_code' => $this->zipcode,
+                    'city' => $this->city,
+                    'state' => $this->province,
+                    'country' => $this->country
+                ],
+            ],
+            'source' => $token['id']
+        ]);
+
+        $charge = $stripe->charges()->create([
+            'customer' => $customer['id'],
+            'currency' => 'USD',
+            'amount' => session()->get('checkout')['total'],
+            'description' => 'Payment for order no ' . $order->id
+        ]);
+
+        if($charge['status'] == 'succeeded')
+        {
+            $this->makeTransaction($order->id,'approved');
+            $this->resetCart();
+        }
+        else
+        {
+            session()->flash('stripe_error','Error in Transaction!');
+            $this->thankyou = 0;
+        }
+    } catch(Exception $e){
+        session()->flash('stripe_error',$e->getMessage());
+        $this->thankyou = 0;
+    }
+        }
+
+    }
+    
+    public function makeTransaction($orderId, $status)
+    {
+        $transaction=new Transaction();
            $transaction->user_id=Auth::user()->id;
            $transaction->order_id=$order->id;
            $transaction->mode='cod';
-           $transaction->status='pending';
+           $transaction->status=$this->paymentmode;
            $transaction->save();
-        }         
-        $this->thankyou=1;
-        Cart::instance('cart')->destroy();
-        session()->forget('checkout');                             
+        }
     }
-    // Assuming this function is within a class, you can add it to your class
-
-    // public function makeTransaction($orderId, $status)
-    // {
-    //     $order = Order::find($orderId);        
-    //     if ($order) {
-    //         $order->status = $status;
-    //         $order->save();
-    //     }
-    // }
 
 
-    // public function resetCart()
-    // {
-    //     $this->thankyou = 1;
-    //     Cart::instance('cart')->destroy();
-    //     session()->forget('checkout'); 
-    // }
+    public function resetCart()
+    {
+        $this->thankyou = 1;
+        Cart::instance('cart')->destroy();
+        session()->forget('checkout'); 
+    }
 
     public function verifyForCheckout(){
         if(!Auth::check()){
@@ -211,7 +269,7 @@ public function placeOrder()
         }
     }
 
-    public function render()
+    public function  render()
     {
         $this->verifyForCheckout();
         return view('livewire.checkout-component')->layout('layouts.base');
