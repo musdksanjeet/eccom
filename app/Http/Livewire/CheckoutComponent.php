@@ -179,29 +179,41 @@ public function placeOrder()
            $transaction->save();
         }         
         $this->thankyou=1;
-                             
+        Cart::instance('cart')->destroy();
+        session()->forget('checkout');                             
     }
     // Assuming this function is within a class, you can add it to your class
 
-    public function makeTransaction($orderId, $status)
-    {
-        $order = Order::find($orderId);        
-        if ($order) {
-            $order->status = $status;
-            $order->save();
+    // public function makeTransaction($orderId, $status)
+    // {
+    //     $order = Order::find($orderId);        
+    //     if ($order) {
+    //         $order->status = $status;
+    //         $order->save();
+    //     }
+    // }
+
+
+    // public function resetCart()
+    // {
+    //     $this->thankyou = 1;
+    //     Cart::instance('cart')->destroy();
+    //     session()->forget('checkout'); 
+    // }
+
+    public function verifyForCheckout(){
+        if(!Auth::check()){
+            return redirect()->route('login');
+        }else if($this->thankyou){
+            return redirect()->route('thankyou');
+        }else if(!session()->get('checkout')){
+            return redirect()->route('product.cart');
         }
-    }
-
-
-    public function resetCart()
-    {
-        $this->thankyou = 1;
-        Cart::instance('cart')->destroy();
-        session()->forget('checkout'); 
     }
 
     public function render()
     {
+        $this->verifyForCheckout();
         return view('livewire.checkout-component')->layout('layouts.base');
     }
 }
