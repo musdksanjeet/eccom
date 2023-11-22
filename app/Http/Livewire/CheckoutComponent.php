@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Cart;
 use App\Models\OrderItem;
 use App\Models\Shipping;
+use App\Models\Transaction;
 
 class CheckoutComponent extends Component
 {
@@ -34,6 +35,12 @@ class CheckoutComponent extends Component
     public $s_zipcode;
     public $paymentmode;
     public $thankyou; 
+    public $card_no;
+    public $exp_month;
+    public $exp_year;
+    public $cvv;
+
+
 
    public function updated($fields)
 {
@@ -63,6 +70,14 @@ class CheckoutComponent extends Component
             's_country' => 'required',
             's_zipcode' => 'required'
         ]);
+    }
+    if($this->paymentmode=="card"){
+        $this->validateOnly($fields,[
+        'card_no' => 'required|numeric',
+        'exp_month' => 'required|numeric',
+        'exp_year' => 'required|numeric',
+        'cvc' => 'required|numeric'
+        ]);
     }   
     
 }
@@ -82,6 +97,15 @@ public function placeOrder()
         'zipcode' => 'required',
         'paymentmode' => 'required'
     ]);
+    if($this->paymentmode == 'card')
+    {
+    $this->validate([
+    'card_no' => 'required|numeric',
+    'exp_month' => 'required|numeric',
+    'exp_year' => 'required|numeric',
+    'cvc' => 'required|numeric'
+    ]);
+    }
 
     $order =  new Order();
     $order->user_id = Auth::user()->id;
@@ -147,10 +171,15 @@ public function placeOrder()
 
         if($this->paymentmode == 'cod')
         {
-            $this->makeTransaction($order->id,'pending');
-            $this->resetCart();
+           $transaction=new Transaction();
+           $transaction->user_id=Auth::user()->id;
+           $transaction->order_id=$order->id;
+           $transaction->mode='cod';
+           $transaction->status='pending';
+           $transaction->save();
         }         
-        $this->sendOrderConfirmationMail($order);                        
+        $this->thankyou=1;
+                             
     }
     // Assuming this function is within a class, you can add it to your class
 
