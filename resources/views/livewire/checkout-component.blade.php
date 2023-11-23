@@ -169,9 +169,9 @@
                         </p> 
 
                         <p class="row-in-form">
-                            <label for="cvc">CVC:</label>
-                            <input  type="password" name="cvc" value="" placeholder="CVC" wire:model="cvc">
-                            @error('cvc')  <span class="text-danger">{{$message}}</span> @enderror
+                            <label for="cvv">CVV:</label>
+                            <input  type="password" name="cvv" value="" placeholder="cvv" wire:model="cvv">
+                            @error('cvv')  <span class="text-danger">{{$message}}</span> @enderror
                         </p> 
                     </div>  
                     @endif                                         
