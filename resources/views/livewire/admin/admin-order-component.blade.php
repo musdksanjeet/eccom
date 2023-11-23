@@ -33,8 +33,7 @@
                                     <th>Email</th>
                                     <th>Zipcode</th>
                                     <th>Status</th>
-                                    <th>Order Date</th>                                    
-                              
+                                    <th>Order Date</th>  
                                     <th colspan="2" style="text-align: center">Action</th>
                                 </tr>
                             </thead>
