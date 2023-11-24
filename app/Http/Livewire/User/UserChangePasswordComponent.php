@@ -21,7 +21,7 @@ class UserChangePasswordComponent extends Component
         ]);
     }
 
-    pblic function changePassword()
+    public function changePassword()
     {
         $this->validate([
              'current_password'=>'required',
