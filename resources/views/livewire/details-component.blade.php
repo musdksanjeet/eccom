@@ -23,48 +23,62 @@
                               </ul>
                             </div>
                         </div>
-                        <div class="detail-info">
-                            <div class="product-rating">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <a href="#" class="count-review">(05 review)</a>
+                     <div class="detail-info">
+                            <div class="product-rating">  
+                                <style>
+                                    .color-gray{
+                                        color:#e6e6e6 !important;
+                                    }
+                                </style>
+
+                                @php
+                                    $avgrating = 0;
+                                @endphp            
+                                @foreach($product->orderItems->where('rstatus',1) as $orderItem)               
+                                    @php
+                                        $avgrating =  $avgrating + $orderItem->review->rating;
+                                    @endphp
+                                @endforeach
+                                @for($i=1;$i<=5;$i++)
+                                    @if($i<=$avgrating)
+                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                    @else
+                                        <i class="fa fa-star color-gray" aria-hidden="true"></i>
+                                    @endif
+                                @endfor                                                    
+                                <a href="#" class="count-review">({{$product->orderItems->where('rstatus',1)->count()}} review)</a>                           
                             </div>
                             <h2 class="product-name">{{$product->name}}</h2>
                             <div class="short-desc">
-                                <ul>
-                                  {!! $product->short_description !!}
-                                </ul>
+                                {!! $product->short_description !!}
                             </div>
                             <div class="wrap-social">
-                                <a class="link-socail" href="#"><img src="{{asset('assets/images/social-list.png')}}" alt=""></a>
+                                <a class="link-socail" href="#"><img src="{{ asset('assets/images/social-list.png') }}" alt=""></a>
                             </div>
-                            @if($product->sale_price > 0 && $sale->status==1 && $sale->sale_date > Carbon\Carbon::now())
-                            <div class="wrap-price">
-                                <span class="product-price">${{$product->sale_price}}</span>
-                                <del><span class="product-price salep">${{$product->regular_price}}</span></del>
-                            </div>
+                            @if($product->sale_price > 0  && $sale->status == 1 && $sale->sale_date > Carbon\Carbon::now())
+                                <div class="wrap-price">
+                                    <span class="product-price">${{$product->sale_price}}</span>
+                                    <del><span class="product-price regprice">${{$product->regular_price}}</span></del>
+                                </div>
                             @else
-                            <div class="wrap-price"><span class="product-price">${{$product->regular_price}}</span></div>
+                                <div class="wrap-price"><span class="product-price">${{$product->regular_price}}</span></div>
                             @endif
-
                             <div class="stock-info in-stock">
                                 <p class="availability">Availability: <b>{{$product->stock_status}}</b></p>
                             </div>
                             <div class="quantity">
                                 <span>Quantity:</span>
                                 <div class="quantity-input">
-                                    <input type="text" name="product-quatity" value="1" data-max="120" pattern="[0-9]*" wire:model="qty">
-                                    
-                                    <a class="btn btn-reduce" href="#" wire:click.prevent="decreaseQuantity"></a>
+                                    <input type="text" name="product-quatity" value="1" data-max="120" pattern="[0-9]*" wire:model="qty" >                                
+                                    <a class="btn btn-reduce" href="#" wire:click.prevent="decreseQuantity"></a>
+
+
                                     <a class="btn btn-increase" href="#" wire:click.prevent="increaseQuantity"></a>
                                 </div>
                             </div>
                             <div class="wrap-butons">
                                 @if($product->sale_price > 0  && $sale->status == 1 && $sale->sale_date > Carbon\Carbon::now())
-                                     <a href="#" class="btn add-to-cart" wire:click.prevent="store({{$product->id}},'{{$product->name}}',{{$product->sale_price}})">Add to Cart</a>
+                                    <a href="#" class="btn add-to-cart" wire:click.prevent="store({{$product->id}},'{{$product->name}}',{{$product->sale_price}})">Add to Cart</a>
                                 @else
                                     <a href="#" class="btn add-to-cart" wire:click.prevent="store({{$product->id}},'{{$product->name}}',{{$product->regular_price}})">Add to Cart</a>
                                 @endif
@@ -102,30 +116,59 @@
                                 <div class="tab-content-item " id="review">
                                     
                                     <div class="wrap-review-form">
+                                        <style>
+                                            .width-0-percent{
+                                                width:0%;
+                                            }
+                                            .width-20-percent{
+                                                width:20%;
+                                            }
+                                            .width-40-percent{
+                                                width:40%;
+                                            }
+                                            .width-60-percent{
+                                                width:60%;
+                                            }
+                                            .width-80-percent{
+                                                width:80%;
+                                            }
+                                            .width-100-percent{
+                                                width:100%;
+                                            }
+                                        </style>
                                         
                                         <div id="comments">
-                                            <h2 class="woocommerce-Reviews-title">01 review for <span>Radiant-360 R6 Chainsaw Omnidirectional [Orage]</span></h2>
-                                            <ol class="commentlist">
-                                                <li class="comment byuser comment-author-admin bypostauthor even thread-even depth-1" id="li-comment-20">
-                                                    <div id="comment-20" class="comment_container"> 
-                                                        <img alt="" src="assets/images/author-avata.jpg')}}" height="80" width="80">
-                                                        <div class="comment-text">
-                                                            <div class="star-rating">
-                                                                <span class="width-80-percent">Rated <strong class="rating">5</strong> out of 5</span>
+                                                    <h2 class="woocommerce-Reviews-title">{{$product->orderItems->where('rstatus',1)->count()}} review for <span>{{$product->name}}</span></h2>
+                                                    <ol class="commentlist">
+                                                        @foreach($product->orderItems->where('rstatus',1) as $orderItem)
+                                                        <li class="comment byuser comment-author-admin bypostauthor even thread-even depth-1" id="li-comment-20">
+
+
+                                                            <div id="comment-20" class="comment_container"> 
+
+
+                                                                <img alt="" src="{{ asset('assets/images/author-avata.jpg') }}" height="80" width="80">
+                                                                <div class="comment-text">
+                                                                    <div class="star-rating">
+                                                                        <span class="width-{{  $orderItem->review->rating * 20 }}-percent">Rated <strong class="rating">{{$orderItem->review->rating}}</strong> out of 5</span>
+                                                                    </div>
+                                                                    <p class="meta"> 
+                                                                        <strong class="woocommerce-review__author">{{$orderItem->order->user->name}}</strong> 
+                                                                        <span class="woocommerce-review__dash">–</span>
+                                                                        <time class="woocommerce-review__published-date" datetime="2008-02-14 20:00" >{{Carbon\Carbon::parse($orderItem->review->created_at)->format('d F Y g:i A')}}</time>
+                                                                    </p>
+                                                                    <div class="description">
+                                                                        <p>{{$orderItem->review->comment}}</p>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                            <p class="meta"> 
-                                                                <strong class="woocommerce-review__author">admin</strong> 
-                                                                <span class="woocommerce-review__dash">–</span>
-                                                                <time class="woocommerce-review__published-date" datetime="2008-02-14 20:00" >Tue, Aug 15,  2017</time>
-                                                            </p>
-                                                            <div class="description">
-                                                                <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            </ol>
-                                        </div><!-- #comments -->
+                                                        </li>
+                                                        @endforeach
+                                                    </ol>
+                                                </div><!-- #comments -->                                    
+
+                                            </div>
+                                        </div>
 
                                         <div id="review_form_wrapper">
                                             <div id="review_form">
