@@ -1,4 +1,4 @@
-<x-base-layout>
+<x-guest-layout>
     <main id="main" class="main-site left-sidebar">
 
         <div class="container">
@@ -40,5 +40,5 @@
         </div><!--end container-->
 
     </main>
-</x-base-layout>
+</x-guest-layout>
 
