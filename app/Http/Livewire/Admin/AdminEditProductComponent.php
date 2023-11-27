@@ -43,6 +43,7 @@ class AdminEditProductComponent extends Component
         $this->image = $product->image;      
         $this->category_id = $product->category_id;        
         $this->product_id = $product->id;
+        $this->$images=explode(',',$product->images);
     }   
 
     public function generateSlug(){
@@ -89,6 +90,7 @@ class AdminEditProductComponent extends Component
                 'newimage' => 'required|mimes:jpeg,png'
             ]);
         }
+
         $product=Product::find($this->product_id);
         $product->name = $this->name;
         $product->slug = $this->slug;
@@ -107,6 +109,30 @@ class AdminEditProductComponent extends Component
             $this->newimage->storeAs('products',$imageName);
             $product->image = $imageName;
         }  
+
+                if($this->newimages)
+        {
+        if($product->images)
+        {
+            $images = explode(",",$product->images);
+            foreach($images as $image)
+            {
+                if($image)
+                {
+                    unlink('assets/images/products'.'/'.$image); 
+                }
+            }
+        }
+
+        $imagesname ='';
+        foreach($this->newimages as $key=>$image)
+        {
+            $imgName = Carbon::now()->timestamp . $key . '.' . $image->extension();
+            $image->storeAs('products',$imgName);
+            $imagesname = $imagesname . ',' . $imgName;
+            }
+            $product->images =  $imagesname;
+        }
         $product->category_id = $this->category_id;
         $product->save();
         session()->flash('message','Product has been updated successfully!');
