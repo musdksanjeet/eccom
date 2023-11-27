@@ -108,6 +108,9 @@
 												<li class="menu-item" >
 													<a title="Contact Us Messages" href="{{ route('admin.contact') }}">Contact Us Messages</a>
 												</li>
+												<li class="menu-item" >
+													<a title="Setting" href="{{ route('admin.setting') }}">Setting</a>
+												</li>
 
 										
 												<li class="menu-item">

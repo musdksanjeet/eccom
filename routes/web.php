@@ -35,7 +35,7 @@ use App\Http\Livewire\User\UserReviewComponent;
 use App\Http\Livewire\User\UserChangePasswordComponent;
 use App\Http\Livewire\ContactComponent;
 use App\Http\Livewire\Admin\AdminContactComponent;
-
+use App\Http\Livewire\Admin\AdminSettingComponent;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -95,6 +95,7 @@ Route::middleware(['auth:sanctum','verified','authadmin'])->group(function(){
     Route::get('/admin/orders/{order_id}',AdminOrderDetailsComponent::class)->name('admin.orderdetails');
 
     Route::get('/admin/contact',AdminContactComponent::class)->name('admin.contact');
+    Route::get('/admin/setting',AdminSettingComponent::class)->name('admin.setting'); 
 });
 
 //For user
