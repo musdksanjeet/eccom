@@ -240,6 +240,7 @@ public function placeOrder()
                 $this->thankyou = 0;
             }
         }
+        $this->sendOrderConfirmationMail($order);
     }
 
     
@@ -252,7 +253,10 @@ public function placeOrder()
        $transaction->status=$status;
        $transaction->save();
     }
-
+     public function sendOrderConfirmationMail($order)
+    {
+        Mail::to($order->email)->send(new OrderMail($order));
+    }
 
     public function resetCart()
     {
@@ -270,10 +274,7 @@ public function placeOrder()
             return redirect()->route('product.cart');
         }
     }
-    public function sendOrderConfirmationMail($order)
-    {
-        Mail::to($order->email)->send(new OrderMail($order));
-    }
+   
 
     public function  render()
     {
