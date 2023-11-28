@@ -11,6 +11,9 @@ use App\Models\Shipping;
 use App\Models\Transaction;
 use Stripe;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderMail;
+use Exception;
+
 
 class CheckoutComponent extends Component
 {
