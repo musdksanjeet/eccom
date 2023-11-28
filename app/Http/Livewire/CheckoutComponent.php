@@ -10,6 +10,7 @@ use App\Models\OrderItem;
 use App\Models\Shipping;
 use App\Models\Transaction;
 use Stripe;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutComponent extends Component
 {
@@ -268,6 +269,10 @@ public function placeOrder()
         }else if(!session()->get('checkout')){
             return redirect()->route('product.cart');
         }
+    }
+    public function sendOrderConfirmationMail($order)
+    {
+        Mail::to($order->email)->send(new OrderMail($order));
     }
 
     public function  render()
