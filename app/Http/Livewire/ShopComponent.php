@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use Livewire\WithPagination;
 use Cart;
+use Illuminate\Support\Facades\Auth;
 class ShopComponent extends Component
 {
     use WithPagination;
@@ -65,6 +66,10 @@ class ShopComponent extends Component
         }
         else{
             $products=Product::whereBetween('regular_price',[$this->min_price,$this->max_price])->paginate($this->pagesize);
+        }
+        if(Auth::check())
+        {
+            Cart::instance('cart')->store(Auth::user()->email);
         }
         $categories=Category::all();
         return view('livewire.shop-component',['products'=>$products,'categories'=>$categories])->layout('layouts.base');
