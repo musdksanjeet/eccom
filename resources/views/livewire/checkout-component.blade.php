@@ -204,7 +204,12 @@
                             <span>Processing...</span>
                         </div>
                     @endif
-
+                    @if($errors->isEmpty())
+                        <div wire:ignore id="processing" style="font-size:22px; margin-bottom:20px;padding-left:37px;color:green;display:none;">
+                            <i class="fa fa-spinner fa-pulse fa-fw"></i>
+                            <span>Processing...</span>
+                        </div>
+                    @endif
                     <button type="submit" class="btn btn-medium">Place order now </button>                    
                     
                 </div>
