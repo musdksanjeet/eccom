@@ -16,6 +16,13 @@ class AdminCategoryComponent extends Component
         session()->flash('message','Category has been deleted successfully');
     }
 
+    public function deleteSubcategory($id)
+    {
+        $scategory = Subcategory::find($id);
+        $scategory->delete();
+        session()->flash('message','Subcategory has been deleted successfully!');
+    }
+
     public function render()
     {
         $categories=Category::paginate(5);
