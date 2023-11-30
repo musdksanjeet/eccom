@@ -19,6 +19,19 @@
                         @endif
                         <form class="form-horizontal" wire:submit.prevent="updateCategory">
                             <div class="form-group">
+                                <label class="col-md-4 control-label">Parent Category</label>
+                                <div class="col-md-4">
+                                    <select class="form-control" wire:model="category_id">
+                                        <option value="">None</option>
+                                        @foreach($categories as $category)
+                                            <option value="{{$category->id}}">{{$category->name}}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('slug')  <p class="text-danger">{{$message}}</p> @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
                                 <label class="col-md-4 control-label">Category Name</label>
                                 <div class="col-md-4">
                                     <input type="text" placeholder="Category Name" class="form-control input-md" wire:model="name" wire:keyup="generateslug" />
