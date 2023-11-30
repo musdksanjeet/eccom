@@ -239,6 +239,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
 	<script src="https://cdn.tiny.cloud/1/ychu9zvwzvm3e3sa0hib6f9dafqv44g7bhgtlool1vowa8vy/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+	<script src="{{ asset('assets/js/chosen.jquery.min.js') }}"></script>
 	@livewireScripts
 	@stack('scripts')
 </body>
